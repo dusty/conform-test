@@ -54,15 +54,19 @@ export default function Login() {
   const params = useParams()
 
   const [form, fields] = useForm({
+    // setting a key will reset the form if the params id changes
     id: `user-${params.id}`,
     lastResult: actionData,
+    // load the form data with the initial values from the loader
     defaultValue: { ...loaderData },
+    // run html validation client side before submitting
     onValidate({ formData }) {
       return parseWithZod(formData, { schema })
     },
     shouldValidate: 'onBlur',
   })
 
+  // this handles the nested object
   const other = fields.thing.getFieldset()
 
   useEffect(() => {
@@ -72,6 +76,7 @@ export default function Login() {
   return (
     <Form
       method="post"
+      // sets all the accessiblility props
       {...getFormProps(form)}
       style={{ marginTop: '1rem' }}
     >
