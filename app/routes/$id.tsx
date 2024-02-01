@@ -66,10 +66,6 @@ export default function Login() {
   const other = fields.thing.getFieldset()
 
   useEffect(() => {
-    console.log(getFormProps(form))
-  }, [form])
-
-  useEffect(() => {
     console.log(JSON.stringify(actionData, null, 2))
   }, [actionData])
 
