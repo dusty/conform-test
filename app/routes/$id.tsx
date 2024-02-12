@@ -49,6 +49,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ error: data, data: null })
   } else {
     const data = submission.value
+    console.log('success', data)
     return json({ data, error: null })
   }
 }
