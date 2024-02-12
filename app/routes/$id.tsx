@@ -3,7 +3,6 @@ import { parseWithZod } from '@conform-to/zod'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
 import { json } from '@remix-run/node'
 import { Form, Link, useActionData, useLoaderData, useParams } from '@remix-run/react'
-import { useDeepCompareEffectNoCheck } from 'use-deep-compare-effect'
 import { z } from 'zod'
 
 const serverSchema = z.object({
@@ -78,26 +77,13 @@ export default function Login() {
   // this handles the array object
   const tasks = fields.tasks.getFieldList()
 
-  const emailInputProps = getInputProps(fields.email, { type: 'email' })
   const passwordInputProps = getInputProps(fields.password, { type: 'password' })
   const formProps = getFormProps(form)
   const fieldsetProps = getFieldsetProps(fields.thing)
 
-  useDeepCompareEffectNoCheck(() => {
-    console.log('getInputProps', JSON.stringify(passwordInputProps, null, 2))
-  }, [emailInputProps])
-
-  useDeepCompareEffectNoCheck(() => {
-    console.log('getFormProps', JSON.stringify(formProps, null, 2))
-  }, [formProps])
-
-  useDeepCompareEffectNoCheck(() => {
-    console.log('getFieldsetProps', JSON.stringify(fieldsetProps, null, 2))
-  }, [fieldsetProps])
-
-  useDeepCompareEffectNoCheck(() => {
-    console.log('actionData', JSON.stringify(actionData, null, 2))
-  }, [actionData])
+  console.log('getFormProps', JSON.stringify(formProps, null, 2))
+  console.log('getFieldsetProps', JSON.stringify(fieldsetProps, null, 2))
+  console.log('getInputProps', JSON.stringify(passwordInputProps, null, 2))
 
   return (
     <div style={{ padding: '1rem' }}>
