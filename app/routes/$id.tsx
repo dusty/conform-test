@@ -6,18 +6,17 @@ import { Form, useActionData, useLoaderData, useParams } from '@remix-run/react'
 import { useDeepCompareEffectNoCheck } from 'use-deep-compare-effect'
 import { z } from 'zod'
 
-const schema = z.object({
+const serverSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(5),
+  password: z.string().min(5, { message: 'It must be 5 dude' }),
   thing: z.object({ name: z.string() }).optional(),
   remember: z.boolean().default(false),
+  tasks: z.array(z.string()),
 })
 
-const schema2 = z.object({
-  email: z.string().email(),
+// NOTE: these will usually be both
+const clientSchema = serverSchema.extend({
   password: z.string(),
-  thing: z.object({ name: z.string() }).optional(),
-  remember: z.boolean().default(false),
 })
 
 const defaultValues = [
@@ -26,6 +25,7 @@ const defaultValues = [
     email: 'dusty+one@postal.io',
     thing: { name: 'one' },
     remember: true,
+    tasks: ['1', '2'],
   },
   {
     id: '2',
@@ -42,7 +42,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.formData()
-  const submission = parseWithZod(formData, { schema })
+  const submission = parseWithZod(formData, { schema: serverSchema })
   if (submission.status !== 'success') {
     const data = submission.reply()
     console.log('error', data)
@@ -68,7 +68,7 @@ export default function Login() {
     defaultValue: { ...loaderData },
     // run html validation client side before submitting
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema: schema2 })
+      return parseWithZod(formData, { schema: clientSchema })
     },
     shouldValidate: 'onBlur',
   })
@@ -76,12 +76,16 @@ export default function Login() {
   // this handles the nested object
   const other = fields.thing.getFieldset()
 
+  // this handles the array object
+  const tasks = fields.tasks.getFieldList()
+
   const emailInputProps = getInputProps(fields.email, { type: 'email' })
+  const passwordInputProps = getInputProps(fields.password, { type: 'password' })
   const formProps = getFormProps(form)
   const fieldsetProps = getFieldsetProps(fields.thing)
 
   useDeepCompareEffectNoCheck(() => {
-    console.log('getInputProps', JSON.stringify(emailInputProps, null, 2))
+    console.log('getInputProps', JSON.stringify(passwordInputProps, null, 2))
   }, [emailInputProps])
 
   useDeepCompareEffectNoCheck(() => {
@@ -104,6 +108,7 @@ export default function Login() {
       style={{ marginTop: '1rem' }}
     >
       <div id={form.errorId}>{form.errors}</div>
+
       <div>
         <label htmlFor={fields.email.id}>Email</label>
         <input {...getInputProps(fields.email, { type: 'email' })} />
@@ -118,6 +123,7 @@ export default function Login() {
         <span>Remember me</span>
         <input {...getInputProps(fields.remember, { type: 'checkbox' })} />
       </label>
+
       <fieldset
         {...getFieldsetProps(fields.thing)}
         style={{ marginTop: '1rem' }}
@@ -126,7 +132,27 @@ export default function Login() {
         <input {...getInputProps(other.name, { type: 'text' })} />
         <span id={other.name.errorId}>{other.name.errors}</span>
       </fieldset>
-      <button style={{ marginTop: '1rem' }}>Login</button>
+
+      <div style={{ paddingTop: '1rem' }}>
+        {tasks.map((task, index) => {
+          return (
+            <div key={task.id}>
+              <input {...getInputProps(task, { type: 'text' })} />
+              <button {...form.remove.getButtonProps({ name: fields.tasks.name, index })}>
+                remove
+              </button>
+            </div>
+          )
+        })}
+        <button
+          {...form.insert.getButtonProps({ name: fields.tasks.name })}
+          style={{ marginTop: '1rem' }}
+        >
+          Add task
+        </button>
+      </div>
+
+      <button style={{ marginTop: '1rem' }}>Submit</button>
     </Form>
   )
 }
