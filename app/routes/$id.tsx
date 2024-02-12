@@ -76,20 +76,24 @@ export default function Login() {
   // this handles the nested object
   const other = fields.thing.getFieldset()
 
-  useDeepCompareEffectNoCheck(() => {
-    console.log('getInputProps: email', getInputProps(fields.email, { type: 'email' }))
-  }, [fields.email])
+  const emailInputProps = getInputProps(fields.email, { type: 'email' })
+  const formProps = getFormProps(form)
+  const fieldsetProps = getFieldsetProps(fields.thing)
 
   useDeepCompareEffectNoCheck(() => {
-    console.log('getFormProps', getFormProps(form))
-  }, [form])
+    console.log('getInputProps', JSON.stringify(emailInputProps, null, 2))
+  }, [emailInputProps])
 
   useDeepCompareEffectNoCheck(() => {
-    console.log('getFormsetProps: thing', getFieldsetProps(fields.thing))
-  }, [fields.thing])
+    console.log('getFormProps', JSON.stringify(formProps, null, 2))
+  }, [formProps])
 
   useDeepCompareEffectNoCheck(() => {
-    console.log('actionData', actionData)
+    console.log('getFieldsetProps', JSON.stringify(fieldsetProps, null, 2))
+  }, [fieldsetProps])
+
+  useDeepCompareEffectNoCheck(() => {
+    console.log('actionData', JSON.stringify(actionData, null, 2))
   }, [actionData])
 
   return (
