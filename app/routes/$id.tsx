@@ -3,7 +3,7 @@ import { parseWithZod } from '@conform-to/zod'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
 import { json, redirect } from '@remix-run/node'
 import { Form, useActionData, useLoaderData, useParams } from '@remix-run/react'
-import { useEffect } from 'react'
+import { useDeepCompareEffectNoCheck } from 'use-deep-compare-effect'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -13,12 +13,12 @@ const schema = z.object({
   remember: z.boolean().default(false),
 })
 
-// const schema2 = z.object({
-//   email: z.string().email(),
-//   password: z.string(),
-//   thing: z.object({ name: z.string() }).optional(),
-//   remember: z.boolean().default(false),
-// })
+const schema2 = z.object({
+  email: z.string().email(),
+  password: z.string(),
+  thing: z.object({ name: z.string() }).optional(),
+  remember: z.boolean().default(false),
+})
 
 const defaultValues = [
   {
@@ -68,7 +68,7 @@ export default function Login() {
     defaultValue: { ...loaderData },
     // run html validation client side before submitting
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema })
+      return parseWithZod(formData, { schema: schema2 })
     },
     shouldValidate: 'onBlur',
   })
@@ -76,8 +76,20 @@ export default function Login() {
   // this handles the nested object
   const other = fields.thing.getFieldset()
 
-  useEffect(() => {
-    console.log(JSON.stringify(actionData, null, 2))
+  useDeepCompareEffectNoCheck(() => {
+    console.log('getInputProps: email', getInputProps(fields.email, { type: 'email' }))
+  }, [fields.email])
+
+  useDeepCompareEffectNoCheck(() => {
+    console.log('getFormProps', getFormProps(form))
+  }, [form])
+
+  useDeepCompareEffectNoCheck(() => {
+    console.log('getFormsetProps: thing', getFieldsetProps(fields.thing))
+  }, [fields.thing])
+
+  useDeepCompareEffectNoCheck(() => {
+    console.log('actionData', actionData)
   }, [actionData])
 
   return (
