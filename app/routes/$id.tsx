@@ -136,7 +136,7 @@ export default function Login() {
       <div style={{ paddingTop: '1rem' }}>
         {tasks.map((task, index) => {
           return (
-            <div key={task.id}>
+            <div key={task.key}>
               <input {...getInputProps(task, { type: 'text' })} />
               <button {...form.remove.getButtonProps({ name: fields.tasks.name, index })}>
                 remove
