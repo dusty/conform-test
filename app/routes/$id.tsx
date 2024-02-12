@@ -13,6 +13,13 @@ const schema = z.object({
   remember: z.boolean().default(false),
 })
 
+// const schema2 = z.object({
+//   email: z.string().email(),
+//   password: z.string(),
+//   thing: z.object({ name: z.string() }).optional(),
+//   remember: z.boolean().default(false),
+// })
+
 const defaultValues = [
   {
     id: '1',
