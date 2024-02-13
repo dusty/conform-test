@@ -64,13 +64,12 @@ export default function Login() {
   const [form, fields] = useForm({
     // setting a key will reset the form if the params id changes
     id: `user-${params.id}`,
+    // this helps conform set all the data and errors
     lastResult: actionData?.error,
     // load the form data with the initial values from the loader
     defaultValue: { ...loaderData },
     // run html validation client side before submitting
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: clientSchema })
-    },
+    onValidate: ({ formData }) => parseWithZod(formData, { schema: clientSchema }),
     // run validation on blur:  onSubmit | onInput | onBlur
     shouldValidate: 'onBlur',
   })
