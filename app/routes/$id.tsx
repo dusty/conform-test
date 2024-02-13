@@ -46,6 +46,9 @@ export async function action({ request }: ActionFunctionArgs) {
     const data = submission.reply()
     console.log('error', data)
     return json({ error: data, data: null })
+  } else if (submission.value.password === 'asdfasdf') {
+    const data = submission.reply({ formErrors: [`You can't use that password.`] })
+    return json({ error: data, data: null })
   } else {
     const data = submission.value
     console.log('success', data)
@@ -68,19 +71,20 @@ export default function Login() {
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: clientSchema })
     },
+    // run validation on blur:  onSubmit | onInput | onBlur
     shouldValidate: 'onBlur',
   })
 
-  // this handles the nested object
+  // this handles the thing object
   const other = fields.thing.getFieldset()
 
-  // this handles the array object
+  // this handles the tasks array
   const tasks = fields.tasks.getFieldList()
 
+  // for logging purposes
   const passwordInputProps = getInputProps(fields.password, { type: 'password' })
   const formProps = getFormProps(form)
   const fieldsetProps = getFieldsetProps(fields.thing)
-
   console.log('getFormProps', JSON.stringify(formProps, null, 2))
   console.log('getFieldsetProps', JSON.stringify(fieldsetProps, null, 2))
   console.log('getInputProps', JSON.stringify(passwordInputProps, null, 2))
