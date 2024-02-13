@@ -48,6 +48,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ error: data, data: null })
   } else if (submission.value.password === 'asdfasdf') {
     const data = submission.reply({ formErrors: [`You can't use that password.`] })
+    console.log('error', data)
     return json({ error: data, data: null })
   } else {
     const data = submission.value
